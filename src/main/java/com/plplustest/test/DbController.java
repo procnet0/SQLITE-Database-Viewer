@@ -13,18 +13,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class DbController {
 	 public Connection connect() throws SQLException {
-		 try {
+		try {
 			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e1) {
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
-		 String dbfile = "jdbc:sqlite:E:\\Bitnami\\wampstack-7.1.13-1\\apache2\\htdocs\\PlPlusTest\\onepageapp\\db";
-		 Connection conn = null;
-		   conn = DriverManager.getConnection(dbfile);
-			return conn;
-
-	 
+		String dbfile = "jdbc:sqlite:E:\\Bitnami\\wampstack-7.1.13-1\\apache2\\htdocs\\PlPlusTest\\onepageapp\\src\\main\\resources\\us-census.db";
+		Connection conn = null;
+		conn = DriverManager.getConnection(dbfile);
+		return conn;
 	 }
 	 
 	 public ResultSet selectCol(String colname, String orderby) {
@@ -40,7 +38,7 @@ public class DbController {
 	             PreparedStatement stmt = conn.prepareStatement(sql);
 				 stmt.setString(1, colname);
 				 stmt.setString(2, ordertype);
-				 result = stmt.executeQuery(sql);
+				 result = stmt.executeQuery();
 				 conn.close();
 	        } catch (SQLException e) {
 	            System.out.println(e.getMessage());
@@ -59,7 +57,7 @@ public class DbController {
 		 try {
 			 Connection conn = this.connect();
              PreparedStatement stmt = conn.prepareStatement(sql);
-			 result = stmt.executeQuery(sql);
+			 result = stmt.executeQuery();
 			 conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
