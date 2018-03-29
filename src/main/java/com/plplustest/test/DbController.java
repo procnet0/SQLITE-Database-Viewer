@@ -22,7 +22,7 @@ public class DbController {
 	
 	public DbController() {
 		SQLiteDataSource datasourc = new SQLiteDataSource();
-		datasourc.setUrl("jdbc:sqlite:E:\\Bitnami\\wampstack-7.1.13-1\\apache2\\htdocs\\PlPlusTest\\onepageapp\\src\\main\\resources\\us-census.db");
+		datasourc.setUrl("jdbc:sqlite:src/main/resources/us-census.db");
 		this.dataSource = datasourc;
 	}
 
@@ -85,7 +85,7 @@ public class DbController {
 			 System.out.println("EXECUTE STATEMENT");
 			 result.next();
 			 while(result.next()) {
-				 //System.out.println(result.getInt(1) + " = " + result.getString(2));
+				 System.out.println(result.getInt(1) + " = " + result.getString(2));
 				 array.put(result.getInt(1), result.getString(2));
 			 }
 			 collist = array;
