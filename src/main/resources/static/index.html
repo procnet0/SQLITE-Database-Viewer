@@ -13,11 +13,11 @@
 		<div class="col-12 col-sm-8">
 			<div class="row">
 				<div class="col">
-				<form class="inline-form" name="formSelector" action="getResult" method="POST">
-					<select id="selector" class="custom-select">
+				<form class="inline-form" name="formSelector" id="formSelector" action="postResult" method="POST">
+					<select id="selector" name="selector" class="custom-select">
 					  <option selected>Wait for intialisation</option>
 					</select>
-						<button id="sender" type="button" class="btn btn-dark">Search</button>
+						<button id="sender" type="submit" class="btn btn-dark">Search</button>
 				</form>
 				</div>
 			</div>
@@ -33,7 +33,7 @@
 				    </tr>
 				  </thead>
 				  
-				  <tbody>
+				  <tbody id="resultDrop">
 				    <tr>
 				      <th scope="row">1</th>
 				      <td>empty</td>

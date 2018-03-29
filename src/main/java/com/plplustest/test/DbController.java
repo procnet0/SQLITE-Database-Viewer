@@ -2,71 +2,101 @@ package com.plplustest.test;
 
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.springframework.stereotype.Component;
+import org.sqlite.SQLiteDataSource;
 
 
-@Component
+
 public class DbController {
+	
+	
+	SQLiteDataSource dataSource= null;
+	 Map<Integer,String> collist = null;
+	
+	public DbController() {
+		SQLiteDataSource datasourc = new SQLiteDataSource();
+		datasourc.setUrl("jdbc:sqlite:E:\\Bitnami\\wampstack-7.1.13-1\\apache2\\htdocs\\PlPlusTest\\onepageapp\\src\\main\\resources\\us-census.db");
+		this.dataSource = datasourc;
+	}
+
+	
+	
 	 public Connection connect() throws SQLException {
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String dbfile = "jdbc:sqlite:E:\\Bitnami\\wampstack-7.1.13-1\\apache2\\htdocs\\PlPlusTest\\onepageapp\\src\\main\\resources\\us-census.db";
-		Connection conn = null;
-		conn = DriverManager.getConnection(dbfile);
+
+		 System.out.println("Connect");
+		Connection conn = dataSource.getConnection();
+		 System.out.println("Connect SUCEED");
 		return conn;
 	 }
 	 
-	 public ResultSet selectCol(String colname, String orderby) {
+	 public List<ResultUnit> selectCol(String colname) {
 		 ResultSet result = null;
+		 System.out.println("SELECTCOL");
 		 String ordertype = "average";
-		 if (orderby == "count") {
-			 ordertype = "average";
-		 }
-		 
-		 String sql = "SELECT ? as colname , count(*) AS counter, avg(age) AS average FROM census_learn_sql GROUP BY colname ORDER BY ? DESC LIMIT 100";
+			// ordertype = "count";
+		 if(collist.containsValue(colname) == false )
+			 return null;;
+		 List<ResultUnit> results = new ArrayList<ResultUnit>();
+		 String sql = "SELECT `" +colname+"` as colname , count(*) AS counter, avg(age) AS average FROM census_learn_sql GROUP BY colname ORDER BY colname DESC ,counter  DESC, average DESC LIMIT 100";
 		 try {
 				 Connection conn = this.connect();
+				 System.out.println("PREPARE STATEMENT");
 	             PreparedStatement stmt = conn.prepareStatement(sql);
-				 stmt.setString(1, colname);
-				 stmt.setString(2, ordertype);
+				 System.out.println("EXECUTE STATEMENT");
 				 result = stmt.executeQuery();
+				 while(result.next()) {
+					 ResultUnit unit = new ResultUnit();
+					 System.out.println(result.getString(1) + " = " + result.getInt(2) + " / " + result.getFloat(3));
+					 unit.setValue(result.getString(1));
+					 unit.setCount(result.getInt(2));
+					 unit.setAverage(result.getFloat(3));
+					 results.add(unit);
+				 }
 				 conn.close();
 	        } catch (SQLException e) {
 	            System.out.println(e.getMessage());
-	            e.printStackTrace();
-	            System.out.println(e.getSQLState());
 	        }catch (NullPointerException e) {
 	            System.out.println(e.getMessage());
 	        }
-		 return result;
+		 return results;
 	 }
 	 
-	 public ResultSet getColList() {
-		 
+	 public  Map<Integer,String> getColList() {
+
+		 System.out.println("GETCOLLIST");
 		 ResultSet result = null;
 		 String sql = "PRAGMA table_info(census_learn_sql)";
+		 Map<Integer,String> array = new HashMap<Integer,String>();
 		 try {
 			 Connection conn = this.connect();
+			 System.out.println("PREPARE STATEMENT");
              PreparedStatement stmt = conn.prepareStatement(sql);
+
+			 System.out.println("PREPARE STATEMENT DONE");
 			 result = stmt.executeQuery();
+
+			 System.out.println("EXECUTE STATEMENT");
+			 result.next();
+			 while(result.next()) {
+				 //System.out.println(result.getInt(1) + " = " + result.getString(2));
+				 array.put(result.getInt(1), result.getString(2));
+			 }
+			 collist = array;
 			 conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
-            System.out.println(e.getSQLState());
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
         }
-		 return result;
+		 
+		 return array;
 	 }
 	 
 
