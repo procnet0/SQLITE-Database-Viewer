@@ -35,12 +35,12 @@ $(document).ready(function() {
 	         data : { foo : null },
 	         success : function(res) {
 	            if(res){
-	            	//console.log(res);
+	            	console.log(res);
 	            	var htmlstring = "";
 	            	$('option').remove();
 	            	var length = Object.keys(res).length + 1;
 	            	for(var i=1;i<length; i++) {
-	            		htmlstring += "<option value='"+ res[i] +"' >" + res[i] + "</option>";
+	            		htmlstring += '<option value="'+ res[i] +'" >' + res[i] + '</option>';
 	            	}
 	            	$('#selector').append(htmlstring);
 	             
