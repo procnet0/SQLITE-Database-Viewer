@@ -10,16 +10,16 @@ When you select a column name, the application display the Top 100 value in this
 
 To run this locally
 
-  Install Maven
-  Clone this repo  to your file system
-  Build with [Maven](https://maven.apache.org/)
-  In [STS](https://spring.io/tools)
+  Install Maven.
+  Clone this repo  to your file system.
+  Build with [Maven](https://maven.apache.org/).
+  In [STS](https://spring.io/tools).
     On windows go on [your-folder]/src/main/resources/  
         * right-clic on sqlite-jdbc-3.21.0.jar
         * ->build-path
         * ->add to build path
-  Then Start server as spring boot app
-  you will be able to access the site at http://localhost:8080
+  Then Start server as spring boot app.
+  You will be able to access the site at http://localhost:8080.
 
 ### Running
 
@@ -47,6 +47,7 @@ To run this locally
     |-> max size result area + scroll
     |-> database Stats area (database name
                           + selectable database)
+
 
 
 ## Built With
