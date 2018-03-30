@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ajaxHandler {
 	DbController dbController = new DbController();
 	
-	
 	@PostMapping("postResult")
 	public ResponseEntity<List<ResultUnit>> getDbResult(HttpServletRequest request , HttpServletResponse response) {
 		String colname = request.getParameter("selector");

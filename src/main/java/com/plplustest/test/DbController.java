@@ -14,6 +14,7 @@ import org.sqlite.SQLiteDataSource;
 
 
 
+
 public class DbController {
 	
 	
@@ -22,7 +23,7 @@ public class DbController {
 	
 	public DbController() {
 		SQLiteDataSource datasourc = new SQLiteDataSource();
-		datasourc.setUrl("jdbc:sqlite:src/main/resources/us-census.db");
+		datasourc.setUrl("jdbc:sqlite:db/us-census.db");
 		this.dataSource = datasourc;
 	}
 
@@ -32,15 +33,13 @@ public class DbController {
 
 		 System.out.println("Connect");
 		Connection conn = dataSource.getConnection();
-		 System.out.println("Connect SUCEED");
+		 System.out.println("Connect SUCCEED");
 		return conn;
 	 }
 	 
 	 public List<ResultUnit> selectCol(String colname) {
 		 ResultSet result = null;
 		 System.out.println("SELECTCOL");
-		 String ordertype = "average";
-			// ordertype = "count";
 		 if(collist.containsValue(colname) == false )
 			 return null;;
 		 List<ResultUnit> results = new ArrayList<ResultUnit>();
