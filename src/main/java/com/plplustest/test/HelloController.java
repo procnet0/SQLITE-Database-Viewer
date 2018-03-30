@@ -9,6 +9,6 @@ public class HelloController {
 
     @GetMapping("/")
     public String index(Model model) {
-        return "index.html";
+        return "templates/index.html";
     }
 }

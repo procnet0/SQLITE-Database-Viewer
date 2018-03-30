@@ -10,16 +10,16 @@ When you select a column name, the application display the Top 100 value in this
 
 To run this locally
 
-  Install Maven.
-  Clone this repo  to your file system.
-  Build with [Maven](https://maven.apache.org/).
-  In [STS](https://spring.io/tools).
-    On windows go on [your-folder]/src/main/resources/  
+ Install Maven.
+ Clone this repo  to your file system
+ Build with [Maven](https://maven.apache.org/)
+ In [STS](https://spring.io/tools)
+    On windows go on [your-folder]/src/main/resources/
         * right-clic on sqlite-jdbc-3.21.0.jar
         * ->build-path
         * ->add to build path
-  Then Start server as spring boot app.
-  You will be able to access the site at http://localhost:8080.
+ Then Start server as spring boot app.
+ You will be able to access the site at http://localhost:8080.
 
 ### Running
 
@@ -42,14 +42,28 @@ To run this locally
 
 ### -Possibility to upload database to server.
     |-> Possibility to select database to work on.
-
+	-Store list of DBcontroller in ajaxHandler.
+	-store linked table list with column list 
+	-Check if table contain "age" column other way don't add to valid table.
+	-check if db contain at least 1 valid table.
+	
 ### -Better front
-    |-> max size result area + scroll
-    |-> database Stats area (database name
+    	|-> max size result area + scroll
+    	|-> database Stats area (database name
                           + selectable database)
 
 
-
+	
+	-make Rest call from front with :
+		-Database name (check in ajaxHandler)
+		-Table name(check in dbcontroller) 
+		-Column name (check in dbcontroller)
+		-Actual offset if there is.
+	
+	-send back to front :
+		- result list
+	 	- max number result
+	-
 ## Built With
   * [Spring](https://spring.io/) - Java Framework
   * [Maven](https://maven.apache.org/) - Dependency Management

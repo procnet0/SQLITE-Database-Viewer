@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.sqlite.SQLiteDataSource;
@@ -20,8 +21,7 @@ public class DbController {
 	
 	
 	SQLiteDataSource dataSource= null;
-	 Map<Integer,String> collist = null;
-	 Map<Integer,String> TablesList = null;
+	 List<TableEntity> TablesList = null;
 	 String dataBaseName = null;
 	
 
@@ -31,8 +31,11 @@ public class DbController {
 		datasourc.setUrl("jdbc:sqlite:db/us-census.db");
 		this.dataSource = datasourc;
 		setDataBaseName();
-		setCollist();
 		setTablesList();
+		
+		for(TableEntity table :TablesList) {
+			setCollist(table);
+		}
 	}
 	
 	public DbController(String databaseName) {
@@ -59,41 +62,48 @@ public class DbController {
 		return conn;
 	 }
 	 
-	 public List<ResultUnit> selectCol(String colname) {
+	 public List<ResultUnit> selectCol(String colname, String tableName) {
 		 ResultSet result = null;
 		 System.out.println("SELECTCOL");
-		 if(collist.containsValue(colname) == false )
-			 return null;;
-		 List<ResultUnit> results = new ArrayList<ResultUnit>();
-		 String sql = "SELECT `" +colname+"` as colname , count(*) AS counter, avg(age) AS average FROM census_learn_sql GROUP BY colname ORDER BY colname*1 ASC , colname DESC LIMIT 100";
-		 try {
-				 Connection conn = this.connect();
-				 System.out.println("PREPARE STATEMENT");
-	             PreparedStatement stmt = conn.prepareStatement(sql);
-				 System.out.println("EXECUTE STATEMENT");
-				 result = stmt.executeQuery();
-				 while(result.next()) {
-					 ResultUnit unit = new ResultUnit();
-					 System.out.println(result.getString(1) + " = " + result.getInt(2) + " / " + result.getFloat(3));
-					 unit.setValue(result.getString(1));
-					 unit.setCount(result.getInt(2));
-					 unit.setAverage(result.getFloat(3));
-					 results.add(unit);
-				 }
-				 conn.close();
-	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
-	        }catch (NullPointerException e) {
-	            System.out.println(e.getMessage());
-	        }
-		 return results;
+		 for(TableEntity table : TablesList) {
+				if(table.getTableName().equals(tableName)) {
+					if(table.getColumnArray().containsValue(colname)) {
+						 List<ResultUnit> results = new ArrayList<ResultUnit>();
+						 String sql = "SELECT `" +colname+"` as colname , count(*) AS counter, avg(age) AS average FROM census_learn_sql GROUP BY colname ORDER BY colname*1 , colname DESC LIMIT 100";
+						 try {
+								 Connection conn = this.connect();
+								 System.out.println("PREPARE STATEMENT");
+					             PreparedStatement stmt = conn.prepareStatement(sql);
+								 System.out.println("EXECUTE STATEMENT");
+								 result = stmt.executeQuery();
+								 while(result.next()) {
+									 ResultUnit unit = new ResultUnit();
+									 System.out.println(result.getString(1) + " = " + result.getInt(2) + " / " + result.getFloat(3));
+									 unit.setValue(result.getString(1));
+									 unit.setCount(result.getInt(2));
+									 unit.setAverage(result.getFloat(3));
+									 results.add(unit);
+								 }
+								 conn.close();
+					        } catch (SQLException e) {
+					            System.out.println(e.getMessage());
+					        }catch (NullPointerException e) {
+					            System.out.println(e.getMessage());
+					        }
+						 return results;
+					}
+				}
+			}
+		 
+		return null;
+		
 	 }
 	 
-	 public void setCollist() {
+	 public void setCollist(TableEntity table) {
 
 		 System.out.println("SETCOLLIST");
 		 ResultSet result = null;
-		 String sql = "PRAGMA table_info(census_learn_sql)";
+		 String sql = "PRAGMA table_info("+table.getTableName()+")";
 		 Map<Integer,String> array = new HashMap<Integer,String>();
 		 try {
 			 Connection conn = this.connect();
@@ -111,22 +121,22 @@ public class DbController {
             System.out.println(e.getMessage());
         }
 		 
-		 this.collist = array;
+		 table.setColumnArray(array);
 	 }
 
-	 public  Map<Integer,String> getColList() {
-		return this.collist;
+	 public  Map<Integer,String> getColList(TableEntity table) {
+		return table.getColumnArray();
 	 }
 
 	 
-	public Map<Integer, String> getTablesList() {
+	public List<TableEntity> getTablesList() {
 		return TablesList;
 	}
 
 
 	public void setTablesList() {
 		ResultSet result = null;
-		Map<Integer,String> array = new HashMap<Integer,String>();
+		List<TableEntity> list = new ArrayList<TableEntity>();
 		try {
 			System.out.println("SetTableList");
 			 String sql = "SELECT * FROM sqlite_master WHERE type='table'";
@@ -134,17 +144,26 @@ public class DbController {
 			 Statement stmt = conn.createStatement();
 			 result =  stmt.executeQuery(sql);
 			 while(result.next()) {
+				 TableEntity tableActual = new TableEntity();
 				 System.out.println(result.getInt(1) + " = " + result.getString(2) );
-				 array.put(result.getInt(1), result.getString(2));
+				 tableActual.setTableName(result.getString(2));
+				 list.add(tableActual);
 			 }
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception
 		}
-			
-		this.TablesList = array ;
+		this.TablesList = list ;
 	}
 
+	public TableEntity getTableByName(String tableName) {
+		for(TableEntity table : TablesList) {
+			if(table.getTableName().equals(tableName)) {
+				return table;
+			}
+		}
+		return null;
+	}
 	 
 
 }

@@ -16,10 +16,11 @@ public class ajaxHandler {
 	@PostMapping("postResult")
 	public ResponseEntity<List<ResultUnit>> getDbResult(HttpServletRequest request , HttpServletResponse response) {
 		String colname = request.getParameter("selector");
+		String tablename = "census_learn_sql";
 		if(colname == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		List<ResultUnit> result = dbController.selectCol(colname);
+		List<ResultUnit> result = dbController.selectCol(colname, tablename);
 		if(result == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
@@ -28,7 +29,7 @@ public class ajaxHandler {
 	
 	@PostMapping("init")
 		public ResponseEntity< Map<Integer,String>> initFromDb(HttpServletRequest request , HttpServletResponse response) {
-		 Map<Integer,String> result = dbController.getColList();
+		 Map<Integer,String> result = dbController.getTableByName("census_learn_sql").getColumnArray();
 		if(result == null) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
