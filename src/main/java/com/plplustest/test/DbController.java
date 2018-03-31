@@ -79,7 +79,7 @@ public class DbController {
 								 result = stmt.executeQuery();
 								 while(result.next()) {
 									 ResultUnit unit = new ResultUnit();
-									 System.out.println(result.getString(1) + " = " + result.getInt(2) + " / " + result.getFloat(3));
+									// System.out.println(result.getString(1) + " = " + result.getInt(2) + " / " + result.getFloat(3));
 									 unit.setValue(result.getString(1));
 									 unit.setCount(result.getInt(2));
 									 unit.setAverage(result.getFloat(3));
@@ -110,11 +110,20 @@ public class DbController {
 			 Connection conn = this.connect();
              PreparedStatement stmt = conn.prepareStatement(sql);
 			 result = stmt.executeQuery();
-			 result.next();
+			 Integer i = 0;
+			 
+			 boolean ageValid = false;
 			 while(result.next()) {
-				 System.out.println(result.getInt(1) + " = " + result.getString(2) + "is numeric" + result.getString(2));
-				 array.put(result.getInt(1), result.getString(2));
+				 System.out.println(i + " = *" + result.getString(2) +"* type = "+result.getString(3)  );
+				 if(result.getString(2).equals("age") == false) {
+					array.put(i, result.getString(2));
+				 	i++;
+				 }
+				 else if(result.getString(3).equals("int") == true) {
+					 ageValid = true;
+				 }
 			 }
+			 System.out.println("age is valid = "+ageValid);
 			 conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

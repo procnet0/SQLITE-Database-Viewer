@@ -1,3 +1,10 @@
+
+:root{
+	--col-count-1 : 1;
+	--col-count-2 : 1;
+	--col-count-3 : 1;
+}
+
 html,body {
   height: 100%;
   min-width: 1100px;
@@ -58,4 +65,14 @@ html,body {
 
 .ntable-striped tbody tr:nth-of-type(2n) .age-unit {
 		background-color: rgba(0,0,0,.05);
+}
+
+#columnDropZone {
+	columns: var(--col-count-1) auto;
+	border-radius: 10px;
+}
+
+.dropdown-item:hover {
+	color: #26b8bc;
+	background-color: transparent;
 }

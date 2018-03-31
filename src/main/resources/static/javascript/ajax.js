@@ -10,8 +10,6 @@ $(document).ready(function() {
 	        	 $("span.error").remove();
 	            if(res){
 	            	console.log(res);
-	            	var dropzone = $('#resultDrop');
-	            	$(dropzone).html("");
 	            	var dt = $('#dataTable').DataTable()
 	            	dt.clear();
 	            	var length = res.length;
@@ -26,8 +24,6 @@ $(document).ready(function() {
 	            		$(node).find('td').eq(1).addClass('count-unit');
 	            		$(node).find('td').eq(2).addClass('age-unit');
 	            	}
-	            	$('#dataTable').DataTable().
-	            	dropzone.html(htmlstring);
 	            	
 	            }else{
 	  	            $('select[name=selector]').after('<span class="error text-danger">Incorrect Category</span>');
@@ -37,6 +33,7 @@ $(document).ready(function() {
 	      return false;
 	});
 	
+
 	
 	function initiate() {
 	
@@ -48,12 +45,18 @@ $(document).ready(function() {
 	            if(res){
 	            	console.log(res);
 	            	var htmlstring = "";
+	            	var htmlstring2 = "";
 	            	$('#selector option').remove();
-	            	var length = Object.keys(res).length + 1;
-	            	for(var i=1;i<length; i++) {
+	            	var length = Object.keys(res).length;
+	            	for(var i=0;i<length; i++) {
 	            		htmlstring += '<option value="'+ res[i] +'" >' + res[i] + '</option>';
+	            		var fun = "getResult('categories/"+res[i]+"')";
+	            		htmlstring2 += '<a class="dropdown-item" onclick="' + fun+'; return false;" href="categories/'+ res[i]+'">'+ res[i] +'</a>';
 	            	}
 	            	$('#selector').append(htmlstring);
+	            	$('#columnDropZone').html(htmlstring2);
+	            	$('#columnDropZone').get(0).style.setProperty("--col-count-1", Math.ceil(length/15));
+	            	$('#columnMenuButton').text(res[0]);
 	            }else{
 	            	$("#selector");
 	            }
@@ -61,6 +64,8 @@ $(document).ready(function() {
 	      });
 	};
 
+
+		
 	$('#addDatabase').submit(function(e) {
 	    e.preventDefault();
 	    var formdata = new FormData();
@@ -73,25 +78,6 @@ $(document).ready(function() {
 	    xhr.open( 'POST', 'addFile', true );
 	    xhr.onreadystatechange = function ( response ) {console.log(response);};
 	    xhr.send( formdata );
-/*
-	     $.ajax({
-	    	 type: "POST",
-	         url : "addFile",
-	         enctype: 'multipart/form-data',
-	         data: formdata,
-	         contentType: false,
-	         cache: false,
-	         processData: false,
-	         success : function(res) {
-	        	 $("span.error").remove();
-	            if(res){
-	            	console.log(res);
-	            }else{
-	            	console.log(res);
-	  	            $('#dbsender').after('<span class="error text-danger">Error</span>');
-	            }
-	         }
-	      });*/
 	    
 		return false;
 	});
@@ -99,3 +85,8 @@ $(document).ready(function() {
 	initiate();
 	$('#dataTable').DataTable();
 });
+
+function getResult(categorie) {
+	
+	console.log(categorie);
+}
