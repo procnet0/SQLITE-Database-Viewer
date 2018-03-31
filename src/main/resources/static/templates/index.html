@@ -1,51 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="../css/perso.css">
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/datatables.min.css"/>
+ 
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.16/datatables.min.js"></script>
 </head>
 <body>
-<div class="container">
-	<div class="row">
-		<div class="col"></div>
-		<div class="col-12 col-sm-8">
-			<div class="row">
-				<div class="col">
-				<form class="inline-form" name="formSelector" id="formSelector" action="postResult" method="POST">
-					<select id="selector" name="selector" class="custom-select">
-					  <option selected>Wait for intialisation</option>
-					</select>
-						<button id="sender" type="submit" class="btn btn-dark">Search</button>
-				</form>
-				</div>
+<div class="row h-100 mw-100 m-0">
+	<div class="col-2 bg-info">
+		<div class="row">
+			<div class="col-12">
+				<span> Add a database </span>
 			</div>
-			<div class="row">
-				<table class="table table-striped table-hover table-fw-widget dataTable no-footer">
-				
-				  <thead>
-				    <tr>
-				    <th scope="col">n &deg</th>
-				      <th class="sorting_dsc" scope="col">Value</th>
-				      <th class="sorting" scope="col">Count</th>
-				      <th class="sorting" scope="col">Average age</th>
-				    </tr>
-				  </thead>
-				  
-				  <tbody id="resultDrop">
-				    <tr>
-				      <th scope="row">1</th>
-				      <td>empty</td>
-				       <td>empty</td>
-				        <td>empty</td>
-				    </tr>
-				  </tbody>
-				  
-				</table>
+			<div class="col-12">
+				<form action="addFile" id="addDatabase" method="POST" enctype="multipart/form-data">
+					<div class="input-group mb-2">
+					  <div class="custom-file">
+					    <input type="file" accept=".db" class="custom-file-input" name="file"  id="inputGroupFile02">
+					    <label class="custom-file-label" for="inputGroupFile02">Add file</label>
+					  </div>
+					</div>
+					<button id="dbsender" type="submit" class="btn btn-dark">Send</button>
+				</form>
 			</div>
 		</div>
-		<div class="col"></div>
+		<div class="row" >
+			<div class="col-12">
+				<span> Choose a database </span>
+			</div>
+			<div class="col-12" >
+				<div class="dropdown ">
+					  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    Databases active
+					  </button>
+				  	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					    <a class="dropdown-item" href="#">database 1</a>
+					    <a class="dropdown-item" href="#">database 2</a>
+					    <a class="dropdown-item" href="#">database 3</a>
+					</div>
+				</div>
+			</div>
+		</div>
+			<div class="row">
+			<div class="col-12">
+				<span> Choose a table </span>
+			</div>
+			<div class="col-12">
+				<div class="dropdown">
+					  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    table active
+					  </button>
+				  	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					    <a class="dropdown-item" href="#">table 1</a>
+					    <a class="dropdown-item" href="#">table 2</a>
+					    <a class="dropdown-item" href="#">table 3</a>
+					</div>
+				</div>
+			</div>
+		</div>
+			<div class="row">
+			<div class="col-12">
+				<span> Choose a Column </span>
+			</div>
+			<div class="col-12">
+				<div class="dropdown columnMenu">
+					  <button class="btn btn-secondary dropdown-toggle" type="button" id="columnMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    Column active
+					  </button>
+				  	<div class="dropdown-menu" aria-labelledby="columnMenuButton">
+					    <a class="dropdown-item" href="#">Column 1</a>
+					    <a class="dropdown-item" href="#">Column 2</a>
+					    <a class="dropdown-item" href="#">Column 3</a>
+					</div>
+				</div>
+			</div>
+				<div class="col-12">
+							<form class="form-inline" name="formSelector" id="formSelector" action="postResult" method="POST">
+								<div class="input-group mb-2 mr-sm-2">
+									<select id="selector" name="selector" class="custom-select">
+									  <option selected>Wait for intialisation</option>
+									</select>
+								</div>
+								<button id="sender" type="submit" class="btn btn-dark">Search</button>
+							</form>
+						</div>
+		</div>
+	</div>
+	<div class="col-10 bg-light">
+		<div>
+			<div class="row">
+				<div class="col-12">
+					<div class="row" style="margin-top:10px;">
+					</div>
+					<div class="row">
+						<div class="col-12">
+							<table id="dataTable" class="table ntable-striped table-hover table-fixed">
+							  <thead>
+							    <tr>
+							     	<th class="sorting_dsc" scope="col">Value</th>
+							      	<th class="sorting" scope="col">Count</th>
+							      	<th class="sorting" scope="col">Average age</th>
+							    </tr>
+							  </thead>
+							  <tbody id="resultDrop">
+							    <tr>
+							      	<td class="value-unit">empty</td>
+							       	<td class="count-unit">empty</td>
+							        <td class="age-unit">empty</td>
+							    </tr>
+							  </tbody>
+							  <tfoot>
+							  	 <tr>
+							     	<th  scope="col">Value</th>
+							      	<th  scope="col">Count</th>
+							      	<th  scope="col">Average age</th>
+							    </tr>
+							  </tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 </body>

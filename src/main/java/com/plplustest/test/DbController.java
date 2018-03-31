@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.sqlite.SQLiteDataSource;
@@ -37,6 +36,8 @@ public class DbController {
 			setCollist(table);
 		}
 	}
+	
+	// Construct a DbController with the associated database name. 
 	
 	public DbController(String databaseName) {
 		SQLiteDataSource datasourc = new SQLiteDataSource();

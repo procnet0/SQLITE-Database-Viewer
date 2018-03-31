@@ -29,9 +29,8 @@ To run this locally
 
   Todo functionality:
 
-    Upload a conform database to the server.
-    Select a database already uploaded on the server.
-    Sort result field by Value/ Average age / Count.
+    Upload a conform database to the server. (upload work -todo = add new dbcontroller + check if valid(else delet))
+    Select a database already uploaded on the server. (todo = send list of dbcontroller name)
     If more then 100 values, Be able to display 100 next values.
 
 
@@ -43,7 +42,7 @@ To run this locally
 ### -Possibility to upload database to server.
     |-> Possibility to select database to work on.
 	-Store list of DBcontroller in ajaxHandler.
-	-store linked table list with column list 
+	-store linked table list with column list (done)
 	-Check if table contain "age" column other way don't add to valid table.
 	-check if db contain at least 1 valid table.
 	
