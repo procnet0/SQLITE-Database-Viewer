@@ -44,21 +44,18 @@ $(document).ready(function() {
 	         success : function(res) {
 	            if(res){
 	            	console.log(res);
-	            	var htmlstring = "";
+	            	
 	            	var htmlstring2 = "";
-	            	$('#selector option').remove();
 	            	var length = Object.keys(res).length;
 	            	for(var i=0;i<length; i++) {
-	            		htmlstring += '<option value="'+ res[i] +'" >' + res[i] + '</option>';
-	            		var fun = "getResult('categories/"+res[i]+"')";
-	            		htmlstring2 += '<a class="dropdown-item" onclick="' + fun+'; return false;" href="categories/'+ res[i]+'">'+ res[i] +'</a>';
+	            		var fun =  res[i];
+	            		htmlstring2 += '<a class="dropdown-item" data-name="'+fun+'" onclick="getResult(event); return false;" href="'+ res[i]+'">'+ res[i] +'</a>';
 	            	}
-	            	$('#selector').append(htmlstring);
 	            	$('#columnDropZone').html(htmlstring2);
 	            	$('#columnDropZone').get(0).style.setProperty("--col-count-1", Math.ceil(length/15));
 	            	$('#columnMenuButton').text(res[0]);
 	            }else{
-	            	$("#selector");
+	            	console.log("empty response for Init");
 	            }
 	         }
 	      });
@@ -76,17 +73,73 @@ $(document).ready(function() {
 	    xhr = new XMLHttpRequest();
 
 	    xhr.open( 'POST', 'addFile', true );
-	    xhr.onreadystatechange = function ( response ) {console.log(response);};
+	    xhr.onreadystatechange = function ( response ) {
+	    	console.log(response);
+	    	if(response && response['Success']) {
+	    	var active =$('#databaseMenuButton');
+	    	$(active).text(response['Success'])
+	    	$(active).attr('data-name', response['Success'])
+	    	}
+	    	else {
+	    		
+	    	}
+	    };
 	    xhr.send( formdata );
 	    
 		return false;
 	});
-	
-	initiate();
+
 	$('#dataTable').DataTable();
+	initiate();
 });
 
-function getResult(categorie) {
-	
+function getResult(e) {
+	console.log(e.target.dataset.name);
+	var categorie = e.target.dataset.name;
 	console.log(categorie);
+	var tableSelected= $('#tableMenuButton').text().trim();
+	console.log(tableSelected);
+	var databaseSelected =$('#databaseMenuButton').text().trim();
+	console.log(databaseSelected);
+	
+    $.post({
+        url : 'postResult',
+        data : {
+        	selector : categorie,
+        	table : tableSelected,
+        	database : databaseSelected
+        },
+        success : function(res) {
+       	 $("span.error").remove();
+          
+       	 if(res){
+	           	console.log(res);
+	           	$('#columnMenuButton').text(categorie);
+	           	var dt = $('#dataTable').DataTable()
+	           //	if(res['offset'] == 0)
+	           		dt.clear();
+	           	var length = res.length;
+	           	for(var i=0;i<length; i++) {
+	           		var node = dt.row.add([
+	           			res[i]['value'],
+	           			res[i]['count'],
+	           			res[i]['average']
+	           		]).draw().node();
+	           		$(node).find('td').eq(0).addClass('value-unit');
+	           		$(node).find('td').eq(1).addClass('count-unit');
+	           		$(node).find('td').eq(2).addClass('age-unit');
+	           	}
+	           	
+	           	if(res['remaining'] && res['remaining'] >= 1) {
+	           		getResult(res['categorie']);
+	           	}
+           }else{
+ 	            $('#colMenu').after('<span class="error text-danger">Incorrect Category</span>');
+           }
+       	 
+       	 
+        }
+     });
+	
+
 }

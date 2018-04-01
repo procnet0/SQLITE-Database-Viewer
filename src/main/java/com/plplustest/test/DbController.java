@@ -19,43 +19,66 @@ import org.sqlite.SQLiteDataSource;
 public class DbController {
 	
 	
-	SQLiteDataSource dataSource= null;
-	 List<TableEntity> TablesList = null;
-	 String dataBaseName = null;
-	
+	private SQLiteDataSource dataSource= null;
+	private List<TableEntity> TablesList = null;
+	private String dataBaseName = null;
+	private Boolean isValid = false;
 
+	// Get if the DbController was created with a valid database.
+	// Must contain at least 1 table with at least 2 column( "age" + another)
+	// Must be a SQLITE database.
+	// For further extensibility ,  have to check for  the database type 
+	// and get the good drive before creating datasource. 
+	// Additionally sql request should be adaptative.
+	public Boolean getisValid() {
+		return isValid;
+	}
 
+	// Test Constructor not used.
 	public DbController() {
 		SQLiteDataSource datasourc = new SQLiteDataSource();
 		datasourc.setUrl("jdbc:sqlite:db/us-census.db");
 		this.dataSource = datasourc;
-		setDataBaseName();
+		setDataBaseName("us-census.db");
 		setTablesList();
-		
-		for(TableEntity table :TablesList) {
-			setCollist(table);
-		}
+		checkValidity();
 	}
 	
 	// Construct a DbController with the associated database name. 
-	
-	public DbController(String databaseName) {
+	public DbController(String databaseNam) {
 		SQLiteDataSource datasourc = new SQLiteDataSource();
-		datasourc.setUrl("jdbc:sqlite:db/"+databaseName+".db");
+		System.out.println("new dBcontroller for "+ databaseNam);
+		datasourc.setUrl("jdbc:sqlite:db/"+databaseNam);
 		this.dataSource = datasourc;
-		setDataBaseName();
+		setDataBaseName(databaseNam);
+		setTablesList();
+		checkValidity();
 	}
-
+	
+	
+	// Set validity of this DbController
+	public void checkValidity() {
+		if( dataSource != null && TablesList != null && TablesList.isEmpty() != true) {
+			isValid = true;
+		}
+		isValid = false;
+	}
+	
+	// Get name of the database file associated with this DbController
 	public String getDataBaseName() {
 		return dataBaseName;
 	}
 
-	public void setDataBaseName() {
+
+	// Set name of the database file associated with this DbController
+	public void setDataBaseName(String dbname) {
 		if(this.dataSource != null)
-			this.dataBaseName = this.dataSource.getDatabaseName();
-		System.out.println(dataBaseName);
+			this.dataBaseName = dbname;
 	}
-	 public Connection connect() throws SQLException {
+	
+	
+	// Retrieve a connection to the MySQLI datasource
+	public Connection connect() throws SQLException {
 
 		 System.out.println("Connect");
 		Connection conn = dataSource.getConnection();
@@ -63,6 +86,7 @@ public class DbController {
 		return conn;
 	 }
 	 
+	// Get info About the Column selected in a specific valid Table of this Database.
 	 public List<ResultUnit> selectCol(String colname, String tableName) {
 		 ResultSet result = null;
 		 System.out.println("SELECTCOL");
@@ -100,6 +124,8 @@ public class DbController {
 		
 	 }
 	 
+	 // Retrieve the list of Column present in the Table passed in parameter  ( "age" is ommited )
+	 // Check if age column is present if not the Table wont be Valid
 	 public void setCollist(TableEntity table) {
 
 		 System.out.println("SETCOLLIST");
@@ -112,7 +138,6 @@ public class DbController {
 			 result = stmt.executeQuery();
 			 Integer i = 0;
 			 
-			 boolean ageValid = false;
 			 while(result.next()) {
 				 System.out.println(i + " = *" + result.getString(2) +"* type = "+result.getString(3)  );
 				 if(result.getString(2).equals("age") == false) {
@@ -120,30 +145,31 @@ public class DbController {
 				 	i++;
 				 }
 				 else if(result.getString(3).equals("int") == true) {
-					 ageValid = true;
+					 table.setAgevalid(true);
 				 }
 			 }
-			 System.out.println("age is valid = "+ageValid);
 			 conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
         }
-		 
-		 table.setColumnArray(array);
+		 if(table.getAgevalid().equals(true))
+			 table.setColumnArray(array);
 	 }
 
+	 // Get the Array of the Column present in the Table ( "age" is ommited )
 	 public  Map<Integer,String> getColList(TableEntity table) {
 		return table.getColumnArray();
 	 }
 
-	 
+	 // Get List of the valid Table's present in this database.
 	public List<TableEntity> getTablesList() {
 		return TablesList;
 	}
 
 
+	// Set the List of the Valid Table's present in this Database + Start column indexing for validity check
 	public void setTablesList() {
 		ResultSet result = null;
 		List<TableEntity> list = new ArrayList<TableEntity>();
@@ -157,7 +183,9 @@ public class DbController {
 				 TableEntity tableActual = new TableEntity();
 				 System.out.println(result.getInt(1) + " = " + result.getString(2) );
 				 tableActual.setTableName(result.getString(2));
-				 list.add(tableActual);
+				 setCollist(tableActual);
+				 if(tableActual.getAgevalid() == true && tableActual.getColumnArray() != null && tableActual.getColumnArray().isEmpty() == false)
+					 list.add(tableActual);
 			 }
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -166,6 +194,7 @@ public class DbController {
 		this.TablesList = list ;
 	}
 
+	// Get the TableEntity  associated with the table name passed in parameter.
 	public TableEntity getTableByName(String tableName) {
 		for(TableEntity table : TablesList) {
 			if(table.getTableName().equals(tableName)) {
