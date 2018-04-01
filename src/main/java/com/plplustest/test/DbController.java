@@ -11,13 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.sqlite.SQLiteDataSource;
 
 
 
 
 public class DbController {
-	
 	
 	private SQLiteDataSource dataSource= null;
 	private List<TableEntity> TablesList = null;
@@ -38,10 +39,10 @@ public class DbController {
 	public DbController() {
 		SQLiteDataSource datasourc = new SQLiteDataSource();
 		datasourc.setUrl("jdbc:sqlite:db/us-census.db");
-		this.dataSource = datasourc;
+		setDataSource(datasourc);
 		setDataBaseName("us-census.db");
 		setTablesList();
-		checkValidity();
+		checkValidity(getDataSource(), getTablesList());
 		System.out.println(isValid);
 	}
 	
@@ -50,20 +51,16 @@ public class DbController {
 		SQLiteDataSource datasourc = new SQLiteDataSource();
 		System.out.println("new dBcontroller for "+ databaseNam);
 		datasourc.setUrl("jdbc:sqlite:db/"+databaseNam);
-		this.dataSource = datasourc;
+		setDataSource(datasourc);
 		setDataBaseName(databaseNam);
 		setTablesList();
-		checkValidity();
-
-		System.out.println("Database Name :" + dataBaseName + "; tablesList size ;" + TablesList.size());
-		System.out.println("dS null = " + (dataSource != null) + " tl null = " + TablesList.isEmpty());
-		System.out.println(isValid);
+		checkValidity(getDataSource(), getTablesList());
 	}
 	
 	
 	// Set validity of this DbController
-	public void checkValidity() {
-		if( dataSource != null && TablesList != null && TablesList.isEmpty() != true) {
+	public void checkValidity(DataSource ds, List<TableEntity> tl) {
+		if( ds != null && tl != null && tl.isEmpty() != true) {
 			this.isValid = true;
 		}
 		else {
@@ -85,10 +82,10 @@ public class DbController {
 	
 	
 	// Retrieve a connection to the MySQLI datasource
-	public Connection connect() throws SQLException {
+	public Connection connect(DataSource dataSrc) throws SQLException {
 
 		 System.out.println("Connect");
-		Connection conn = dataSource.getConnection();
+		Connection conn = dataSrc.getConnection();
 		 System.out.println("Connect SUCCEED");
 		return conn;
 	 }
@@ -103,7 +100,7 @@ public class DbController {
 						 List<ResultUnit> results = new ArrayList<ResultUnit>();
 						 String sql = "SELECT `" +colname+"` as colname , count(*) AS counter, avg(age) AS average FROM census_learn_sql GROUP BY colname ORDER BY colname*1 , colname DESC LIMIT 100";
 						 try {
-								 Connection conn = this.connect();
+								 Connection conn = this.connect(getDataSource());
 								 System.out.println("PREPARE STATEMENT");
 					             PreparedStatement stmt = conn.prepareStatement(sql);
 								 System.out.println("EXECUTE STATEMENT");
@@ -140,7 +137,7 @@ public class DbController {
 		 String sql = "PRAGMA table_info("+table.getTableName()+")";
 		 Map<Integer,String> array = new HashMap<Integer,String>();
 		 try {
-			 Connection conn = this.connect();
+			 Connection conn = this.connect(getDataSource());
              PreparedStatement stmt = conn.prepareStatement(sql);
 			 result = stmt.executeQuery();
 			 Integer i = 0;
@@ -183,7 +180,7 @@ public class DbController {
 		try {
 			System.out.println("SetTableList");
 			 String sql = "SELECT * FROM sqlite_master WHERE type='table'";
-			 Connection conn = this.connect();
+			 Connection conn = this.connect(getDataSource());
 			 Statement stmt = conn.createStatement();
 			 result =  stmt.executeQuery(sql);
 			 while(result.next()) {
@@ -210,6 +207,17 @@ public class DbController {
 		}
 		return null;
 	}
-	 
+	
+	public SQLiteDataSource getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(SQLiteDataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	public void setTablesList(List<TableEntity> tablesList) {
+		TablesList = tablesList;
+	}
 
 }

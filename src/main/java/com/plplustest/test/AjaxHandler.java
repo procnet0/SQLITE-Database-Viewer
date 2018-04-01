@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-public class ajaxHandler {
+public class AjaxHandler {
 	List<DbController> ListdbController = new ArrayList<DbController>();
 	
-	public ajaxHandler() {
+	public AjaxHandler() {
 		File dir = new File("db/");
 		if(dir.isDirectory()) {
 			File[] lfile = dir.listFiles();
@@ -52,7 +52,7 @@ public class ajaxHandler {
 		DbController dbController = getDbController("us-census.db");
 		String tablename = "census_learn_sql";
 		System.out.println("GETDBRESULT - " + colname);
-		if(colname == null || dbController == null) {
+		if(colname == null || dbController == null || tablename == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		List<ResultUnit> result = dbController.selectCol(colname, tablename);
