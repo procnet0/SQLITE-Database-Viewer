@@ -14,12 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartResolver;
 
 @RestController
 public class ajaxHandler {
 	List<DbController> ListdbController = new ArrayList<DbController>();
-	MultipartResolver multipartResolver = null;
 	
 	public ajaxHandler() {
 		File dir = new File("db/");
@@ -29,8 +27,11 @@ public class ajaxHandler {
 			for(int i = 0; i < len; i++) {
 				if(lfile[i].getName().endsWith(".db")) {
 					DbController dbCandidate = new DbController(lfile[i].getName());
-					if(dbCandidate != null && dbCandidate.getisValid() == true)
+					System.out.println(lfile[i].getName());
+					if(dbCandidate != null && dbCandidate.getisValid() == true) {
+						System.out.println("add "+ dbCandidate.getDataBaseName());
 						ListdbController.add(dbCandidate);
+					}
 				}
 			}
 		}
@@ -38,8 +39,9 @@ public class ajaxHandler {
 	
 	public DbController getDbController(String dbName) {
 		for(DbController dbControl : ListdbController) {
-			if(dbControl.getDataBaseName().equals(dbName))
+			if(dbControl.getDataBaseName().equals(dbName)) {
 				return dbControl;
+			}
 		}
 		return null;
 	}
@@ -63,12 +65,17 @@ public class ajaxHandler {
 	@PostMapping("init")
 		public ResponseEntity< Map<Integer,String>> initFromDb(HttpServletRequest request , HttpServletResponse response) {
 		DbController dbController = getDbController("us-census.db");
+		 Map<Integer,String> error = new HashMap<>();
 		if(dbController == null) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			System.out.println(" dbcontroller is  null");
+			error.put(1, " dbcontroller is null");
+			return new ResponseEntity<>(error,HttpStatus.NO_CONTENT);
 		}
 		Map<Integer,String> result = dbController.getTableByName("census_learn_sql").getColumnArray();
 		if(result == null) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			System.out.println(" result is null ");
+			error.put(1, " result is null");
+			return new ResponseEntity<>(error,HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity< Map<Integer,String>>(result,HttpStatus.OK);
 	}

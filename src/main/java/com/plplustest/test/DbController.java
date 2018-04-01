@@ -42,6 +42,7 @@ public class DbController {
 		setDataBaseName("us-census.db");
 		setTablesList();
 		checkValidity();
+		System.out.println(isValid);
 	}
 	
 	// Construct a DbController with the associated database name. 
@@ -53,15 +54,21 @@ public class DbController {
 		setDataBaseName(databaseNam);
 		setTablesList();
 		checkValidity();
+
+		System.out.println("Database Name :" + dataBaseName + "; tablesList size ;" + TablesList.size());
+		System.out.println("dS null = " + (dataSource != null) + " tl null = " + TablesList.isEmpty());
+		System.out.println(isValid);
 	}
 	
 	
 	// Set validity of this DbController
 	public void checkValidity() {
 		if( dataSource != null && TablesList != null && TablesList.isEmpty() != true) {
-			isValid = true;
+			this.isValid = true;
 		}
-		isValid = false;
+		else {
+			this.isValid = false;
+		}
 	}
 	
 	// Get name of the database file associated with this DbController
@@ -181,7 +188,7 @@ public class DbController {
 			 result =  stmt.executeQuery(sql);
 			 while(result.next()) {
 				 TableEntity tableActual = new TableEntity();
-				 System.out.println(result.getInt(1) + " = " + result.getString(2) );
+				// System.out.println(result.getInt(1) + " = " + result.getString(2) );
 				 tableActual.setTableName(result.getString(2));
 				 setCollist(tableActual);
 				 if(tableActual.getAgevalid() == true && tableActual.getColumnArray() != null && tableActual.getColumnArray().isEmpty() == false)
