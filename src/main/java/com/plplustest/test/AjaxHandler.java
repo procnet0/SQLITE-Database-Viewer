@@ -77,9 +77,12 @@ public class AjaxHandler {
 	
 	@PostMapping("init")
 		public ResponseEntity<JsonResponseGeneric> initFromDb(HttpServletRequest request , HttpServletResponse response) {
-		DbController dbController = ListdbController.get(0);
+
 		LOGGER.info("INITFROMDB");
-		return new ResponseEntity<JsonResponseGeneric>(computeResult(dbController.getDataBaseName()),HttpStatus.OK);
+		String dbname = "";
+		if(!dbArray.isEmpty())
+			dbname = dbArray.get(0);
+		return new ResponseEntity<JsonResponseGeneric>(computeResult(dbname),HttpStatus.OK);
 	}
 	
 	@PostMapping("addFile")
