@@ -117,4 +117,118 @@ public class AjaxHandler {
 		}
 	}
 	
+	public JsonResponseGeneric computeResult(String dbName) {
+		JsonResponseGeneric response = new JsonResponseGeneric();
+		DbController db = getDbController(dbName);
+		Map<String, String> status = new HashMap<String, String>();
+		if(db != null) {
+			response.setDatabaseName(dbName);
+			List<TableEntity> tablelist = db.getTablesList();
+			if(!tablelist.isEmpty()) {
+				Map<Integer,String> tableArray = new HashMap<Integer,String>();
+				Integer i = 0;
+				for(TableEntity table: tablelist ) {
+					tableArray.put(i, table.getTableName());
+					i++;
+				}
+				response.setTableArrays(tableArray);
+				response.setTableName(tablelist.get(0).getTableName());
+				response.setColumnArrays(tablelist.get(0).getColumnArray());
+				if(response.getColumnArrays() != null) {
+					response.setColumnName(response.getColumnArrays().get(0));
+					response.setMaxResult(db.getMaxResult(response.getColumnName(), response.getTableName()));
+					response.setValues(db.selectCol(response.getColumnName(), response.getTableName()));
+					response.setOffset(0);
+					status.put("Success", "DataTable updated");
+				}else {
+					status.put("Error", " Columns not found/invalid");
+				}
+			}else {
+				status.put("Error", " Tables not found/invalid");
+			}
+		}
+		else {
+			status.put("Error", "Database not found/invalid");
+		}
+		response.setStatus(status);
+		return response;
+	}
+	
+	public JsonResponseGeneric computeResult(String dbName, String tbName) {
+		JsonResponseGeneric response = new JsonResponseGeneric();
+		DbController db = getDbController(dbName);
+		Map<String, String> status = new HashMap<String, String>();
+		if(db != null) {
+			response.setDatabaseName(dbName);
+			List<TableEntity> tablelist = db.getTablesList();
+			TableEntity tb = db.getTableByName(tbName);
+			if(!tablelist.isEmpty() && tb != null) {
+				Map<Integer,String> tableArray = new HashMap<Integer,String>();
+				Integer i = 0;
+				for(TableEntity table: tablelist ) {
+					tableArray.put(i, table.getTableName());
+					i++;
+				}
+				response.setTableArrays(tableArray);
+				response.setTableName(tbName);
+				response.setColumnArrays(tb.getColumnArray());
+				if(response.getColumnArrays() != null) {
+					response.setColumnName(response.getColumnArrays().get(0));
+					response.setMaxResult(db.getMaxResult(response.getColumnName(), response.getTableName()));
+					response.setValues(db.selectCol(response.getColumnName(), response.getTableName()));
+					response.setOffset(0);
+					status.put("Success", "DataTable updated");
+				}else {
+					status.put("Error", " Columns not found/invalid");
+				}
+			}else {
+				status.put("Error", " Tables not found/invalid");
+			}
+		}
+		else {
+			status.put("Error", "Database not found/invalid");
+		}
+		response.setStatus(status);
+		return response;
+	}
+	
+	public JsonResponseGeneric computeResult(String dbName, String tbName, String colName) {
+		JsonResponseGeneric response = new JsonResponseGeneric();
+		DbController db = getDbController(dbName);
+		Map<String, String> status = new HashMap<String, String>();
+		if(db != null) {
+			response.setDatabaseName(dbName);
+			List<TableEntity> tablelist = db.getTablesList();
+			TableEntity tb = db.getTableByName(tbName);
+			if(!tablelist.isEmpty() && tb != null) {
+				Map<Integer,String> tableArray = new HashMap<Integer,String>();
+				Integer i = 0;
+				for(TableEntity table: tablelist ) {
+					tableArray.put(i, table.getTableName());
+					i++;
+				}
+				response.setTableArrays(tableArray);
+				response.setTableName(tbName);
+				response.setColumnArrays(tb.getColumnArray());
+				if(response.getColumnArrays() != null && response.getColumnArrays().containsValue(colName)) {
+					response.setColumnName(colName);
+					response.setMaxResult(db.getMaxResult(response.getColumnName(), response.getTableName()));
+					response.setValues(db.selectCol(response.getColumnName(), response.getTableName()));
+					response.setOffset(0);
+					status.put("Success", "DataTable updated");
+				}else {
+					status.put("Error", " Columns not found/invalid");
+				}
+			}else {
+				status.put("Error", " Tables not found/invalid");
+			}
+		}
+		else {
+			status.put("Error", "Database not found/invalid");
+		}
+		response.setStatus(status);
+		return response;
+	}
+	
+	
 }

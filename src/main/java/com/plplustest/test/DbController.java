@@ -216,8 +216,24 @@ public class DbController {
 		this.dataSource = dataSource;
 	}
 
-	public void setTablesList(List<TableEntity> tablesList) {
-		TablesList = tablesList;
+	public Integer getMaxResult(String colname, String tablename) {
+		Integer total = 0;
+		ResultSet result = null;
+		TableEntity tb = getTableByName(tablename);
+		if(tb != null) {
+			if(tb.getColumnArray().containsValue(colname)) {
+				try {
+					String sql = "SELECT  count(distinct `"+ colname +"`) + count(distinct case when `"+ colname+"` is null then 1 end) FROM `" + tablename+"`";
+					Connection conn = this.connect(getDataSource());
+					Statement stmt = conn.createStatement();
+					 result =  stmt.executeQuery(sql);
+					 total = result.getInt(0);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return total;
 	}
 
 }
