@@ -25,44 +25,21 @@ To run this locally
 
 
   Base functionality:
-    Select a column to see the associated result appears.
+    Select a databse/table/column to see the associated result appears.
 
-  Todo functionality:
-
-    Upload a conform database to the server. (upload work -todo = add new dbcontroller + check if valid(else delet))
-    Select a database already uploaded on the server. (todo = send list of dbcontroller name)
-    If more then 100 values, Be able to display 100 next values.
-
-
-
+  Additionnal functionality:
+  	Add a sqlite database to the server. Database's table must have one "age" column plus one other column at least. 
 
 
 ## THINGS TO DO:
 
-### -Possibility to upload database to server.
-    |-> Possibility to select database to work on.
-	-Store list of DBcontroller in ajaxHandler.
-	-store linked table list with column list (done)
-	-Check if table contain "age" column other way don't add to valid table.
-	-check if db contain at least 1 valid table.
-	
-### -Better front
-    	|-> max size result area + scroll
-    	|-> database Stats area (database name
-                          + selectable database)
-
-
-	
 	-make Rest call from front with :
-		-Database name (check in ajaxHandler)
-		-Table name(check in dbcontroller) 
-		-Column name (check in dbcontroller)
 		-Actual offset if there is.
+		
+	Deploy to Heroku.
 	
-	-send back to front :
-		- result list
-	 	- max number result
-	-
+	Implements Unit test.
+		
 ## Built With
   * [Spring](https://spring.io/) - Java Framework
   * [Maven](https://maven.apache.org/) - Dependency Management

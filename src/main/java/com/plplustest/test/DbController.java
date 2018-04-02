@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
 
@@ -24,7 +26,7 @@ public class DbController {
 	private List<TableEntity> TablesList = null;
 	private String dataBaseName = null;
 	private Boolean isValid = false;
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(DbController.class);
 	// Get if the DbController was created with a valid database.
 	// Must contain at least 1 table with at least 2 column( "age" + another)
 	// Must be a SQLITE database.
@@ -43,18 +45,18 @@ public class DbController {
 		setDataBaseName("us-census.db");
 		setTablesList();
 		checkValidity(getDataSource(), getTablesList());
-		System.out.println(isValid);
 	}
 	
 	// Construct a DbController with the associated database name. 
 	public DbController(String databaseNam) {
+		LOGGER.info("DBCONTROLLER CONSTRUCTOR START - " + databaseNam );
 		SQLiteDataSource datasourc = new SQLiteDataSource();
-		System.out.println("new dBcontroller for "+ databaseNam);
 		datasourc.setUrl("jdbc:sqlite:db/"+databaseNam);
 		setDataSource(datasourc);
 		setDataBaseName(databaseNam);
 		setTablesList();
 		checkValidity(getDataSource(), getTablesList());
+		
 	}
 	
 	
@@ -66,6 +68,7 @@ public class DbController {
 		else {
 			this.isValid = false;
 		}
+		LOGGER.info("CHECK VALIDITY - " + this.dataBaseName + " - " + this.isValid );
 	}
 	
 	// Get name of the database file associated with this DbController
@@ -83,17 +86,16 @@ public class DbController {
 	
 	// Retrieve a connection to the MySQLI datasource
 	public Connection connect(DataSource dataSrc) throws SQLException {
-
-		 System.out.println("Connect");
+		LOGGER.info("CONNECT - " + this.dataBaseName );
 		Connection conn = dataSrc.getConnection();
-		 System.out.println("Connect SUCCEED");
+		LOGGER.info("CONNECT - " + this.dataBaseName + " SUCCESS " + (conn != null));
 		return conn;
 	 }
 	 
 	// Get info About the Column selected in a specific valid Table of this Database.
 	 public List<ResultUnit> selectCol(String colname, String tableName) {
 		 ResultSet result = null;
-		 System.out.println("SELECTCOL");
+		 LOGGER.info("SELECTCOL START - " + tableName + " - " + colname );
 		 for(TableEntity table : TablesList) {
 				if(table.getTableName().equals(tableName)) {
 					if(table.getColumnArray().containsValue(colname)) {
@@ -101,13 +103,10 @@ public class DbController {
 						 String sql = "SELECT `" +colname+"` as colname , count(*) AS counter, avg(age) AS average FROM census_learn_sql GROUP BY colname ORDER BY colname*1 , colname DESC LIMIT 100";
 						 try {
 								 Connection conn = this.connect(getDataSource());
-								 System.out.println("PREPARE STATEMENT");
 					             PreparedStatement stmt = conn.prepareStatement(sql);
-								 System.out.println("EXECUTE STATEMENT");
 								 result = stmt.executeQuery();
 								 while(result.next()) {
 									 ResultUnit unit = new ResultUnit();
-									// System.out.println(result.getString(1) + " = " + result.getInt(2) + " / " + result.getFloat(3));
 									 unit.setValue(result.getString(1));
 									 unit.setCount(result.getInt(2));
 									 unit.setAverage(result.getFloat(3));
@@ -115,15 +114,15 @@ public class DbController {
 								 }
 								 conn.close();
 					        } catch (SQLException e) {
-					            System.out.println(e.getMessage());
+					        	LOGGER.info("SELECTCOL ERROR - " + e.getMessage());
 					        }catch (NullPointerException e) {
-					            System.out.println(e.getMessage());
+					        	LOGGER.info("SELECTCOL ERROR - " + e.getMessage());
 					        }
 						 return results;
 					}
 				}
 			}
-		 
+		 LOGGER.info("SELECTCOL ABORTED - " + tableName + " - " + colname );
 		return null;
 		
 	 }
@@ -132,7 +131,7 @@ public class DbController {
 	 // Check if age column is present if not the Table wont be Valid
 	 public void setCollist(TableEntity table) {
 
-		 System.out.println("SETCOLLIST");
+		 LOGGER.info("SETCOLLIST START - " + table.getTableName() );
 		 ResultSet result = null;
 		 String sql = "PRAGMA table_info("+table.getTableName()+")";
 		 Map<Integer,String> array = new HashMap<Integer,String>();
@@ -141,9 +140,7 @@ public class DbController {
              PreparedStatement stmt = conn.prepareStatement(sql);
 			 result = stmt.executeQuery();
 			 Integer i = 0;
-			 
 			 while(result.next()) {
-				 System.out.println(i + " = *" + result.getString(2) +"* type = "+result.getString(3)  );
 				 if(result.getString(2).equals("age") == false) {
 					array.put(i, result.getString(2));
 				 	i++;
@@ -154,9 +151,9 @@ public class DbController {
 			 }
 			 conn.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        	LOGGER.info("SETCOLLIST ERROR - " + e.getMessage() );
         } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
+        	LOGGER.info("SETCOLLIST ERROR - " + e.getMessage() );
         }
 		 if(table.getAgevalid().equals(true))
 			 table.setColumnArray(array);
@@ -177,23 +174,21 @@ public class DbController {
 	public void setTablesList() {
 		ResultSet result = null;
 		List<TableEntity> list = new ArrayList<TableEntity>();
+		LOGGER.info("SETTABLELIST START - " + this.getDataBaseName() );
 		try {
-			System.out.println("SetTableList");
 			 String sql = "SELECT * FROM sqlite_master WHERE type='table'";
 			 Connection conn = this.connect(getDataSource());
 			 Statement stmt = conn.createStatement();
 			 result =  stmt.executeQuery(sql);
 			 while(result.next()) {
 				 TableEntity tableActual = new TableEntity();
-				// System.out.println(result.getInt(1) + " = " + result.getString(2) );
 				 tableActual.setTableName(result.getString(2));
 				 setCollist(tableActual);
 				 if(tableActual.getAgevalid() == true && tableActual.getColumnArray() != null && tableActual.getColumnArray().isEmpty() == false)
 					 list.add(tableActual);
 			 }
 		} catch (Exception e) {
-			e.printStackTrace();
-			// TODO: handle exception
+			LOGGER.info("SETTABLELIST ERROR - " + e.getMessage() );
 		}
 		this.TablesList = list ;
 	}
@@ -227,9 +222,9 @@ public class DbController {
 					Connection conn = this.connect(getDataSource());
 					Statement stmt = conn.createStatement();
 					 result =  stmt.executeQuery(sql);
-					 total = result.getInt(0);
+					 total = result.getInt(1);
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOGGER.info("GETMAXRESULT ERROR - " + e.getMessage() );
 				}
 			}
 		}

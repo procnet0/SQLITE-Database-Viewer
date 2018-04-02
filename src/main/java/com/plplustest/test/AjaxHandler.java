@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class AjaxHandler {
-	List<DbController> ListdbController = new ArrayList<DbController>();
+	private List<DbController> ListdbController = new ArrayList<DbController>();
+	private List<String> dbArray = new ArrayList<String>(); 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AjaxHandler.class);
 	
 	public AjaxHandler() {
+		LOGGER.info("AJAXHANDLER CONSTRUCTOR START");
 		File dir = new File("db/");
 		if(dir.isDirectory()) {
 			File[] lfile = dir.listFiles();
@@ -27,17 +33,19 @@ public class AjaxHandler {
 			for(int i = 0; i < len; i++) {
 				if(lfile[i].getName().endsWith(".db")) {
 					DbController dbCandidate = new DbController(lfile[i].getName());
-					System.out.println(lfile[i].getName());
 					if(dbCandidate != null && dbCandidate.getisValid() == true) {
-						System.out.println("add "+ dbCandidate.getDataBaseName());
+						LOGGER.info("AJAXHANDLER CONSTRUCTOR - add " +  dbCandidate.getDataBaseName());
 						ListdbController.add(dbCandidate);
+						dbArray.add(dbCandidate.getDataBaseName());
 					}
 				}
 			}
 		}
+		LOGGER.info("AJAXHANDLER CONSTRUCTOR END");
 	}
 	
 	public DbController getDbController(String dbName) {
+		LOGGER.info("getDbController");
 		for(DbController dbControl : ListdbController) {
 			if(dbControl.getDataBaseName().equals(dbName)) {
 				return dbControl;
@@ -47,51 +55,44 @@ public class AjaxHandler {
 	}
 	
 	@PostMapping("postResult")
-	public ResponseEntity<List<ResultUnit>> getDbResult(HttpServletRequest request , HttpServletResponse response) {
+	public ResponseEntity<JsonResponseGeneric> getDbResult(HttpServletRequest request , HttpServletResponse response) {
 		String colname = request.getParameter("selector");
-		DbController dbController = getDbController("us-census.db");
-		String tablename = "census_learn_sql";
-		System.out.println("GETDBRESULT - " + colname);
-		if(colname == null || dbController == null || tablename == null) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		String dbName = request.getParameter("database");
+		String tablename =  request.getParameter("table");
+		LOGGER.info("GETDBRESULT - database - table - column - " +  dbName + " - " + tablename + " - " + colname);
+		if(colname == null && dbName == null && tablename == null ) {
+			return new ResponseEntity<JsonResponseGeneric>(HttpStatus.BAD_REQUEST);
 		}
-		List<ResultUnit> result = dbController.selectCol(colname, tablename);
-		if(result == null) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		if(!(dbName == null || dbName.isEmpty()) && !(tablename == null || tablename.isEmpty()) && !(colname == null || colname.isEmpty()) ) {
+			return new ResponseEntity<JsonResponseGeneric>(computeResult(dbName,tablename, colname), HttpStatus.OK);
 		}
-		return new ResponseEntity<List<ResultUnit>>(result, HttpStatus.OK);
+		else if(!(dbName == null || dbName.isEmpty()) && !(tablename == null || tablename.isEmpty()) ) {
+			return new ResponseEntity<JsonResponseGeneric>(computeResult(dbName,tablename), HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<JsonResponseGeneric>(computeResult(dbName), HttpStatus.OK);
+		}
+
 	}
 	
 	@PostMapping("init")
-		public ResponseEntity< Map<Integer,String>> initFromDb(HttpServletRequest request , HttpServletResponse response) {
-		DbController dbController = getDbController("us-census.db");
-		 Map<Integer,String> error = new HashMap<>();
-		if(dbController == null) {
-			System.out.println(" dbcontroller is  null");
-			error.put(1, " dbcontroller is null");
-			return new ResponseEntity<>(error,HttpStatus.NO_CONTENT);
-		}
-		Map<Integer,String> result = dbController.getTableByName("census_learn_sql").getColumnArray();
-		if(result == null) {
-			System.out.println(" result is null ");
-			error.put(1, " result is null");
-			return new ResponseEntity<>(error,HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity< Map<Integer,String>>(result,HttpStatus.OK);
+		public ResponseEntity<JsonResponseGeneric> initFromDb(HttpServletRequest request , HttpServletResponse response) {
+		DbController dbController = ListdbController.get(0);
+		LOGGER.info("INITFROMDB");
+		return new ResponseEntity<JsonResponseGeneric>(computeResult(dbController.getDataBaseName()),HttpStatus.OK);
 	}
 	
 	@PostMapping("addFile")
-	public ResponseEntity<Map<String,String>> addDatabase( @RequestParam("file") MultipartFile file) {
+	public ResponseEntity<JsonResponseGeneric> addDatabase( @RequestParam("file") MultipartFile file) {
 
-		System.out.println("ADD FILE type "+file.getContentType() +" name ="+ file.getName() +" real name ="+ file.getOriginalFilename() + " size ="+ file.getSize());
-		Map<String,String> result = new HashMap<String, String>();
+		LOGGER.info("ADD FILE type "+file.getContentType() +" name ="+ file.getName() +" real name ="+ file.getOriginalFilename() + " size ="+ file.getSize());
+		JsonResponseGeneric result = new JsonResponseGeneric();
+		Map<String,String> status = new HashMap<String,String>();
 		if(file.isEmpty() == false) {
 			try {
 				File dir = new File("db");
 				if (!dir.exists())
 					dir.mkdirs();
-				System.out.println(dir.getAbsolutePath());
-				System.out.println("filename = "+file.getName());
 				File serverFile = new File(dir.getAbsolutePath()+ File.separator + file.getOriginalFilename());
 				if(serverFile.exists() == false) {
 					Files.copy(file.getInputStream(), serverFile.toPath());
@@ -99,27 +100,32 @@ public class AjaxHandler {
 				DbController dbCandidate = new DbController(serverFile.getName());
 				if(dbCandidate != null && dbCandidate.getisValid().equals(true)) {
 					ListdbController.add(dbCandidate);
-					result.put("Success", file.getOriginalFilename());
-					return new ResponseEntity<Map<String,String>>(result,HttpStatus.OK);
+					dbArray.add(dbCandidate.getDataBaseName());
+					return new ResponseEntity<JsonResponseGeneric>(computeResult(dbCandidate.getDataBaseName()),HttpStatus.OK);
 				}
 				serverFile.delete();
-				result.put("Error", "Database is not valid");
-				return new ResponseEntity<Map<String,String>>(result,HttpStatus.INTERNAL_SERVER_ERROR);
+				status.put("Error", "Database is not valid");
+				result.setStatus(status);
+				return new ResponseEntity<JsonResponseGeneric>(result,HttpStatus.INTERNAL_SERVER_ERROR);
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				result.put("Error", e.getMessage());
-				return new ResponseEntity<Map<String,String>>(result,HttpStatus.INTERNAL_SERVER_ERROR);
+				status.put("Error", e.getMessage());
+				result.setStatus(status);
+				return new ResponseEntity<JsonResponseGeneric>(result,HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} else {
-			result.put("Error", "File is empty");
-			return new ResponseEntity<Map<String,String>>(result,HttpStatus.BAD_REQUEST);
+			status.put("Error", "File is empty");
+			result.setStatus(status);
+			return new ResponseEntity<JsonResponseGeneric>(result,HttpStatus.BAD_REQUEST);
 		}
 	}
 	
 	public JsonResponseGeneric computeResult(String dbName) {
+		LOGGER.info("COMPUTERESULT - 1 ARG - " + dbName);
 		JsonResponseGeneric response = new JsonResponseGeneric();
 		DbController db = getDbController(dbName);
+		response.setDatabaseArrays(dbArray);
 		Map<String, String> status = new HashMap<String, String>();
 		if(db != null) {
 			response.setDatabaseName(dbName);
@@ -155,8 +161,10 @@ public class AjaxHandler {
 	}
 	
 	public JsonResponseGeneric computeResult(String dbName, String tbName) {
+		LOGGER.info("COMPUTERESULT - 2 ARG - " + dbName + " - "+ tbName );
 		JsonResponseGeneric response = new JsonResponseGeneric();
 		DbController db = getDbController(dbName);
+		response.setDatabaseArrays(dbArray);
 		Map<String, String> status = new HashMap<String, String>();
 		if(db != null) {
 			response.setDatabaseName(dbName);
@@ -193,8 +201,11 @@ public class AjaxHandler {
 	}
 	
 	public JsonResponseGeneric computeResult(String dbName, String tbName, String colName) {
+
+		LOGGER.info("COMPUTERESULT - 3 ARG - " + dbName + " - "+ tbName + " - " + colName );
 		JsonResponseGeneric response = new JsonResponseGeneric();
 		DbController db = getDbController(dbName);
+		response.setDatabaseArrays(dbArray);
 		Map<String, String> status = new HashMap<String, String>();
 		if(db != null) {
 			response.setDatabaseName(dbName);

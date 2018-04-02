@@ -5,15 +5,16 @@ import java.util.Map;
 
 public class JsonResponseGeneric {
 	
-	String databaseName;
-	String tableName;
-	String columnName;
-	Map<Integer,String> tableArrays;
-	Map<Integer,String> columnArrays;
-	List<ResultUnit> values;
-	Integer maxResult;
-	Integer offset;
-	Map<String,String> status;
+	private String databaseName;
+	private String tableName;
+	private String columnName;
+	private List<String> databaseArrays;
+	private Map<Integer,String> tableArrays;
+	private Map<Integer,String> columnArrays;
+	private List<ResultUnit> values;
+	private Integer maxResult;
+	private Integer offset;
+	private Map<String,String> status;
 	
 	public String getDatabaseName() {
 		return databaseName;
@@ -68,6 +69,12 @@ public class JsonResponseGeneric {
 	}
 	public void setStatus(Map<String, String> status) {
 		this.status = status;
+	}
+	public List<String> getDatabaseArrays() {
+		return databaseArrays;
+	}
+	public void setDatabaseArrays(List<String> dbArray) {
+		this.databaseArrays = dbArray;
 	}
 
 }
