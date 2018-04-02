@@ -100,7 +100,7 @@ public class DbController {
 				if(table.getTableName().equals(tableName)) {
 					if(table.getColumnArray().containsValue(colname)) {
 						 List<ResultUnit> results = new ArrayList<ResultUnit>();
-						 String sql = "SELECT `" +colname+"` as colname , count(*) AS counter, avg(age) AS average FROM census_learn_sql GROUP BY colname ORDER BY colname*1 , colname DESC LIMIT 100";
+						 String sql = "SELECT `" +colname+"` as colname , count(*) AS counter, avg(age) AS average FROM "+tableName+ "  GROUP BY colname ORDER BY colname*1 , colname DESC LIMIT 100";
 						 try {
 								 Connection conn = this.connect(getDataSource());
 					             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -142,10 +142,12 @@ public class DbController {
 			 Integer i = 0;
 			 while(result.next()) {
 				 if(result.getString(2).equals("age") == false) {
+					 LOGGER.info("SETCOLLIST - ADD ");
 					array.put(i, result.getString(2));
 				 	i++;
 				 }
-				 else if(result.getString(3).equals("int") == true) {
+				 else  {
+					 LOGGER.info("SETCOLLIST - AGE VALIDATED" );
 					 table.setAgevalid(true);
 				 }
 			 }
@@ -184,8 +186,11 @@ public class DbController {
 				 TableEntity tableActual = new TableEntity();
 				 tableActual.setTableName(result.getString(2));
 				 setCollist(tableActual);
-				 if(tableActual.getAgevalid() == true && tableActual.getColumnArray() != null && tableActual.getColumnArray().isEmpty() == false)
+				 
+				 if(tableActual.getAgevalid() == true && tableActual.getColumnArray() != null && tableActual.getColumnArray().isEmpty() == false) {
+					 LOGGER.info("SETTABLELIST - TABLE - " + tableActual.getTableName() + " - is valid = "+ tableActual.getAgevalid() + " - col array -"  + tableActual.getColumnArray().size() );
 					 list.add(tableActual);
+				 }
 			 }
 		} catch (Exception e) {
 			LOGGER.info("SETTABLELIST ERROR - " + e.getMessage() );
