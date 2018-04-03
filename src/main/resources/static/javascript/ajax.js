@@ -16,6 +16,10 @@ $(document).ready(function() {
 			    		populateColumn(response['columnArrays']);
 			    		setColActive(response['columnName']);
 			    		populateDatatable(response['values']);
+			    		if(response['maxResult'] > 100)
+			    			$('#extra').text(', ' + (response['maxResult'] - 100) + ' lines undisplayed');
+			    		else
+			    			$('#extra').text('');
 	            	}
 	            }else{
 	            	console.log("empty response for Init");
@@ -48,6 +52,10 @@ $(document).ready(function() {
 			    		populateColumn(response['columnArrays']);
 			    		setColActive(response['columnName']);
 			    		populateDatatable(response['values']);
+			    		if(response['maxResult'] > 100)
+			    			$('#extra').text(', ' + (response['maxResult'] - 100) + ' lines undisplayed');
+			    		else
+			    			$('#extra').text('');
 			    	}
 			    	else {
 			    		
@@ -58,15 +66,14 @@ $(document).ready(function() {
 		return false;
 	});
 	$('#dataTable').DataTable({
-			dom: "<'row bg-info pt-2'<'col-sm-6'<'row'"+
+			dom: "<'row  pt-2'<'col-sm-6'<'row'"+
 			"<'col-3'<'dropdown databaseMenu'>>"+
 			"<'col-3'<'dropdown tableMenu'>>"+
 			"<'col-3'<'dropdown columnMenu'>>"+
 			"<'col-3'l>>>"+
 			"<'col-sm-6'f>>" +
-			"<'row'<'col-sm-12 pt-2 pb-2 pl-4'<'#dbsel.pathobj'><'#tbsel.pathobj'><'#colsel'>>>" +
 			"<'row'<'col-sm-12'tr>>" +
-			"<'row'<'col-sm-5'i><'col-sm-7'p>>",
+			"<'row'<'col-sm-5'<'row'<'col'i><'#extra.col dataTables_info'>>><'col-sm-7'p>>",
 			fnInitComplete: function(){
                $('div.databaseMenu').html(
             		   '<button class="btn btn-light dropdown-toggle" type="button"'+
@@ -95,6 +102,7 @@ $(document).ready(function() {
 						 '   <a class="dropdown-item" href="#">Column 2</a>'+
 						 '   <a class="dropdown-item" href="#">Column 3</a>'+
 						'</div>');
+               console.log($('.dataTables_length > label'));
                initiate();
              }
         } );
@@ -198,7 +206,7 @@ function getResult(e) {
        	 $("span.error").remove();
           
        	 if(res) {
-	          // 	console.log(res);
+	           	console.log(res);
             	var response = res;
             	if(response && response['status'] && response['status']['Success']) {
             		populateDb(response['databaseArrays']);
@@ -208,6 +216,10 @@ function getResult(e) {
 		    		populateColumn(response['columnArrays']);
 		    		setColActive(response['columnName']);
 		    		populateDatatable(response['values']);
+		    		if(response['maxResult'] > 100)
+		    			$('#extra').text(' ' + (response['maxResult'] - 100) + ' lines undisplayed');
+		    		else
+		    			$('#extra').text('');
             	}
 	           	
 	           	if(res['remaining'] && res['remaining'] >= 1) {

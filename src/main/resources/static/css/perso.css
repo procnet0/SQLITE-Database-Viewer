@@ -3,6 +3,7 @@
 	--col-count-1 : 1;
 	--col-count-2 : 1;
 	--col-count-3 : 1;
+	--custom: #e2e6ea;
 }
 
 html,body {
@@ -35,36 +36,52 @@ html,body {
 	content:'#';
 }
 
-.ntable-striped thead tr th{
-	border-bottom: 3px solid #dee2e6;
+#resultDrop {
+	background-color: #ced2d6;
 }
 
-.ntable-striped tfoot tr th{
-	border-top: 3px solid #dee2e6;
+#dataTable {
+	border-collapse: collapse !important;
+}
+
+.ntable-striped tbody tr:nth-of-type(2n+1){
+	border-bottom:  3px solid #d5d5d5;
+	border-top: 3px solid #d5d5d5;
+}
+
+
+thead {
+	border-bottom:  3px solid #d5d5d5;
+		background-color: var(--light);
+}
+
+tfoot {
+	border-top: 3px solid #d5d5d5;
+		background-color: var(--light);
 }
 
 .ntable-striped tbody tr:nth-of-type(2n+1) .value-unit {
-	background-color: rgba(0,0,0,.01);
+	background-color: rgba(255,255,255,0.9);
 }
 
 .ntable-striped tbody tr:nth-of-type(2n+1) .count-unit {
-	background-color: rgba(0,0,0,.01);
+	background-color: rgba(255,255,255,0.9);
 }
 
 .ntable-striped tbody tr:nth-of-type(2n+1) .age-unit {
-	background-color: rgba(0,0,0,.01);
+	background-color:rgba(255,255,255,0.9);
 }
 
 .ntable-striped tbody tr:nth-of-type(2n) .value-unit {
-		background-color: rgba(0,0,0,.05);
+		background-color: rgba(255,255,255,0.42);
 }
 
 .ntable-striped tbody tr:nth-of-type(2n) .count-unit {
-		background-color: rgba(0,0,0,.03);
+		background-color: rgba(255,255,255,0.42);
 }
 
 .ntable-striped tbody tr:nth-of-type(2n) .age-unit {
-		background-color: rgba(0,0,0,.03);
+		background-color:rgba(255,255,255,0.42);
 }
 
 #columnDropZone {
@@ -89,16 +106,34 @@ html,body {
 .dropdown-toggle{
 	width:100%;
 	white-space: normal;
+	background-color:#e2e6ea;
+	border-color:#e2e6ea;
 }
+
 
 .dropdown-item:hover {
 	color: #26b8bc;
-	background-color: transparent;
 }
 
-#dataTable_length select{
-	
+
+
+
+#dataTable_length select {
+	background-color:#e2e6ea;
+	border: 2px solid black;
+	border-radius: 3px;
+	width: 75px;
+ 	-webkit-appearance: none;
+ 	-moz-appearance: none;
+	 appearance: none;
 }
+
+#dataTable_filter input {
+		background-color:#e2e6ea;
+	border: 2px solid black;
+	border-radius: 3px;
+}
+
 
 .custom-file-label:after {
 	content:"+";
@@ -112,7 +147,12 @@ html,body {
 		background-color:#d7d7d7 ;
 }
 
+.page-link {
+	color: black;
+}
+
 .pathobj{
+	  align-self: center;
 	display: inline-block;
 	margin-left: 3px;
 	margin-right: 6px;
@@ -134,4 +174,17 @@ html,body {
 
 #colsel{
 	display: inline-block;
+    align-self: center;
+}
+
+.bg-custom{
+	background-color:#e2e6ea;
+}
+
+.bg-custom2{
+	background-color:#ddd;
+}
+
+.dropdown-menu {
+	background-color:#f8f9fa;
 }

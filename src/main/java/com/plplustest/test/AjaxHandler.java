@@ -103,7 +103,8 @@ public class AjaxHandler {
 				DbController dbCandidate = new DbController(serverFile.getName());
 				if(dbCandidate != null && dbCandidate.getisValid().equals(true)) {
 					ListdbController.add(dbCandidate);
-					dbArray.add(dbCandidate.getDataBaseName());
+					if(!dbArray.contains(dbCandidate.getDataBaseName()))
+						dbArray.add(dbCandidate.getDataBaseName());
 					return new ResponseEntity<JsonResponseGeneric>(computeResult(dbCandidate.getDataBaseName()),HttpStatus.OK);
 				}
 				serverFile.delete();

@@ -12,7 +12,7 @@ public class JsonResponseGeneric {
 	private Map<Integer,String> tableArrays;
 	private Map<Integer,String> columnArrays;
 	private List<ResultUnit> values;
-	private Integer maxResult;
+	private Integer maxResult = 0;
 	private Integer offset;
 	private Map<String,String> status;
 	
