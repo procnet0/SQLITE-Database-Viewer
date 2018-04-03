@@ -13,86 +13,39 @@
 </head>
 <body>
 <div class="row h-100 mw-100 m-0">
-	<div class="col-2 bg-info">
-		<div class="row">
-			<div class="col-12">
-				<span> Add a database </span>
-			</div>
-			<div class="col-12">
-				<form action="addFile" id="addDatabase" method="POST" enctype="multipart/form-data">
-					<div class="input-group mb-2">
-					  <div class="custom-file">
-					    <input type="file" accept=".db" class="custom-file-input" name="file"  id="inputGroupFile02">
-					    <label class="custom-file-label" for="inputGroupFile02">Add file</label>
-					  </div>
-					</div>
-					<button id="dbsender" type="submit" class="btn btn-dark">Send</button>
-				</form>
-			</div>
-		</div>
-		<div class="row" >
-			<div class="col-12">
-				<span> Choose a database </span>
-			</div>
-			<div class="col-12" >
-				<div class="dropdown databaseMenu">
-					  <button class="btn btn-secondary dropdown-toggle" type="button" id="databaseMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					    Databases active
-					  </button>
-				  	<div class="dropdown-menu" id="databaseDropZone" aria-labelledby="databaseMenuButton">
-					    <a class="dropdown-item" href="#">database 1</a>
-					    <a class="dropdown-item" href="#">database 2</a>
-					    <a class="dropdown-item" href="#">database 3</a>
-					</div>
-				</div>
-			</div>
-		</div>
-			<div class="row">
-			<div class="col-12">
-				<span> Choose a table </span>
-			</div>
-			<div class="col-12">
-				<div class="dropdown tableMenu">
-					  <button class="btn btn-secondary dropdown-toggle" type="button" id="tableMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					    table active
-					  </button>
-				  	<div class="dropdown-menu" id="tableDropZone" aria-labelledby="tableMenuButton">
-					    <a class="dropdown-item" href="#">table 1</a>
-					    <a class="dropdown-item" href="#">table 2</a>
-					    <a class="dropdown-item" href="#">table 3</a>
-					</div>
-				</div>
-			</div>
-		</div>
-			<div class="row">
-			<div class="col-12">
-				<span> Choose a Column </span>
-			</div>
-			<div class="col-12">
-				<div class="dropdown columnMenu">
-					  <button class="btn btn-secondary dropdown-toggle" type="button" id="columnMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					    Column active
-					  </button>
-				  	<div class="dropdown-menu" id="columnDropZone" aria-labelledby="columnMenuButton">
-					    <a class="dropdown-item" href="#">Column 1</a>
-					    <a class="dropdown-item" href="#">Column 2</a>
-					    <a class="dropdown-item" href="#">Column 3</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-10 bg-light">
+	<div class="col-12 bg-light">
 		<div>
 			<div class="row">
 				<div class="col-12">
-					<p class="title text-center h1"> PL-PLUS Technical Test</p>
+					<p class="title text-center h1" id="title2"> PL-PLUS Technical Test</p>
+				</div>
+			</div>
+			<div class="row mt-4 mb-4">
+				<div class="col-4">
+					<div class="row">
+						<div class="col-4 d-flex align-items-center dropdown-head">
+							<div >
+								<span class="h5 text-center align-middle">Add Database </span>
+							</div>
+						</div>
+						<div class="col-8 mt-2">
+							<form action="addFile" id="addDatabase" method="POST" enctype="multipart/form-data">
+								<div class="input-group mb-2">
+								  <div class="custom-file">
+								    <input type="file" accept=".db" class="custom-file-input" name="file"  id="inputGroupFile02">
+								    <label class="custom-file-label" for="inputGroupFile02">Add file</label>
+								  </div>
+								  <div class="input-group-append">
+									<button id="dbsender" type="submit" class="btn "> Send </button>
+								  </div>
+								</div>
+							</form>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-12">
-					<div class="row" style="margin-top:10px;">
-					</div>
 					<div class="row">
 						<div class="col-12">
 							<table id="dataTable" class="table ntable-striped table-hover table-fixed">

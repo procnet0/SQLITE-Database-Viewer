@@ -6,7 +6,7 @@ $(document).ready(function() {
 	         data : { foo : null },
 	         success : function(res) {
 	            if(res){
-	            	console.log(res);
+	            	//console.log(res);
 	            	var response = res;
 	            	if(response && response['status'] && response['status']['Success']) {
 	            		populateDb(response['databaseArrays']);
@@ -23,6 +23,12 @@ $(document).ready(function() {
 	         }
 	      });
 	};
+	
+	$('.custom-file-input').on('change', function() { 
+	    let fileName = $(this).val().split('\\').pop(); 
+	    console.log(fileName);
+	    $(this).next('.custom-file-label').addClass("selected").html(fileName); 
+	});
 
 	$('#addDatabase').submit(function(e) {
 	    e.preventDefault();
@@ -51,8 +57,48 @@ $(document).ready(function() {
 	    xhr.send( formdata );
 		return false;
 	});
-	$('#dataTable').DataTable();
-	initiate();
+	$('#dataTable').DataTable({
+			dom: "<'row bg-info pt-2'<'col-sm-6'<'row'"+
+			"<'col-3'<'dropdown databaseMenu'>>"+
+			"<'col-3'<'dropdown tableMenu'>>"+
+			"<'col-3'<'dropdown columnMenu'>>"+
+			"<'col-3'l>>>"+
+			"<'col-sm-6'f>>" +
+			"<'row'<'col-sm-12 pt-2 pb-2 pl-4'<'#dbsel.pathobj'><'#tbsel.pathobj'><'#colsel'>>>" +
+			"<'row'<'col-sm-12'tr>>" +
+			"<'row'<'col-sm-5'i><'col-sm-7'p>>",
+			fnInitComplete: function(){
+               $('div.databaseMenu').html(
+            		   '<button class="btn btn-light dropdown-toggle" type="button"'+
+            		   ' id="databaseMenuButton" data-toggle="dropdown" data-active="" aria-haspopup="true" aria-expanded="false">'+
+					   ' Databases </button>'+
+					  	'<div class="dropdown-menu" id="databaseDropZone" aria-labelledby="databaseMenuButton">'+
+						 '   <a class="dropdown-item" href="#">database 1</a>'+
+						 '   <a class="dropdown-item" href="#">database 2</a>'+
+						 '   <a class="dropdown-item" href="#">database 3</a>'+
+						'</div>');
+               $('div.tableMenu').html(
+            		   '<button class="btn btn-light dropdown-toggle" type="button"'+
+            		   ' id="tableMenuButton" data-toggle="dropdown" data-active="" aria-haspopup="true" aria-expanded="false">'+
+					   ' Tables </button>'+
+					  	'<div class="dropdown-menu" id="tableDropZone" aria-labelledby="tableMenuButton">'+
+						 '   <a class="dropdown-item" href="#">table 1</a>'+
+						 '   <a class="dropdown-item" href="#">table 2</a>'+
+						 '   <a class="dropdown-item" href="#">table 3</a>'+
+						'</div>');
+               $('div.columnMenu').html(
+            		   '<button class="btn btn-light dropdown-toggle" type="button"'+
+            		   ' id="columnMenuButton" data-toggle="dropdown" data-active="" aria-haspopup="true" aria-expanded="false">'+
+					   ' Columns </button>'+
+					  	'<div class="dropdown-menu" id="columnDropZone" aria-labelledby="columnMenuButton">'+
+						 '   <a class="dropdown-item" href="#">Column 1</a>'+
+						 '   <a class="dropdown-item" href="#">Column 2</a>'+
+						 '   <a class="dropdown-item" href="#">Column 3</a>'+
+						'</div>');
+               initiate();
+             }
+        } );
+	
 });
 
 function populateDb(db) {
@@ -67,7 +113,8 @@ function populateDb(db) {
 }
 
 function setDbActive(dbName) {
-	$('#databaseMenuButton').text(dbName);
+	$('#databaseMenuButton').attr('data-active',dbName);
+	$('#dbsel').text(dbName);
 }
 
 function populateTable(tables) {
@@ -82,7 +129,8 @@ function populateTable(tables) {
 }
 
 function setTbActive(tableName) {
-	$('#tableMenuButton').text(tableName);
+	$('#tableMenuButton').attr('data-active',tableName);
+	$('#tbsel').text(tableName);
 }
 
 function populateColumn(col) {
@@ -97,7 +145,9 @@ function populateColumn(col) {
 }
 
 function setColActive(colName) {
-	$('#columnMenuButton').text(colName);
+	$('#columnMenuButton').attr('data-active',colName);
+	$('#colsel').text(colName);
+	
 }
 
 function populateDatatable(vals) {
@@ -117,19 +167,18 @@ function populateDatatable(vals) {
 }
 
 function getResult(e) {
-	console.log(e.target.dataset.name);
 	var datatype = e.target.dataset.type;
 	
 	switch (datatype) {
 		case "col":
 			var categorie =  e.target.dataset.name;
-			var tableSelected= $('#tableMenuButton').text().trim();
-			var databaseSelected =$('#databaseMenuButton').text().trim();
+			var tableSelected= $('#tableMenuButton').attr('data-active');
+			var databaseSelected =$('#databaseMenuButton').attr('data-active');
 			break;
 		case "table":
 			var categorie =  "";
 			var tableSelected= e.target.dataset.name;
-			var databaseSelected =$('#databaseMenuButton').text().trim();
+			var databaseSelected =$('#databaseMenuButton').attr('data-active');
 			break;
 		case "db":
 			var categorie = "";
@@ -149,7 +198,7 @@ function getResult(e) {
        	 $("span.error").remove();
           
        	 if(res) {
-	           	console.log(res);
+	          // 	console.log(res);
             	var response = res;
             	if(response && response['status'] && response['status']['Success']) {
             		populateDb(response['databaseArrays']);

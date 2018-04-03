@@ -48,7 +48,7 @@ html,body {
 }
 
 .ntable-striped tbody tr:nth-of-type(2n+1) .count-unit {
-	background-color: rgba(0,0,0,.05);
+	background-color: rgba(0,0,0,.01);
 }
 
 .ntable-striped tbody tr:nth-of-type(2n+1) .age-unit {
@@ -60,11 +60,11 @@ html,body {
 }
 
 .ntable-striped tbody tr:nth-of-type(2n) .count-unit {
-		background-color: rgba(0,0,0,.01);
+		background-color: rgba(0,0,0,.03);
 }
 
 .ntable-striped tbody tr:nth-of-type(2n) .age-unit {
-		background-color: rgba(0,0,0,.05);
+		background-color: rgba(0,0,0,.03);
 }
 
 #columnDropZone {
@@ -72,9 +72,23 @@ html,body {
 	border-radius: 10px;
 }
 
+
+.btn{
+	padding:0px;
+}
+
+.dataTables_wrapper {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+
+.dropdown-head span {
+	font-weight:bold;
+}
 .dropdown-toggle{
-	max-width: 170px;
-	overflow: hidden;
+	width:100%;
+	white-space: normal;
 }
 
 .dropdown-item:hover {
@@ -84,4 +98,40 @@ html,body {
 
 #dataTable_length select{
 	
+}
+
+.custom-file-label:after {
+	content:"+";
+	background-color: white;
+}
+.custom-file-input:hover {
+	cursor: pointer;
+}
+
+.input-group-append button:hover{
+		background-color:#d7d7d7 ;
+}
+
+.pathobj{
+	display: inline-block;
+	margin-left: 3px;
+	margin-right: 6px;
+}
+
+.pathobj::after{
+	
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-left: .255em;
+	vertical-align: center;
+	content: "";
+	border-top: .3em solid transparent;
+	border-right: 0;
+	border-bottom: .3em solid transparent;
+	border-left: .3em solid ;
+}
+
+#colsel{
+	display: inline-block;
 }
