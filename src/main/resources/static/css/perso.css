@@ -188,3 +188,8 @@ tfoot {
 .dropdown-menu {
 	background-color:#f8f9fa;
 }
+
+.thetitle {
+	padding-left: 19px;
+	padding-right: 19px;
+}
