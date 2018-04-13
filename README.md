@@ -1,4 +1,4 @@
-# PlPlusTest
+# SQLITE-database-Viewer
 
 
 This project is a SQLITE user-database Viewer, with Java in backend and JavaScript in front-end.
